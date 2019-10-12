@@ -4,6 +4,7 @@ using Aspenlaub.Net.GitHub.CSharp.Pegh.Entities;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Extensions;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.PureSearch.Application;
+using Autofac;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Test {
@@ -12,9 +13,9 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Test {
         private readonly IFolder vGitHubFolder;
 
         public SearchCommandTest() {
-            var componentProvider = new ComponentProvider();
+            var container = new ContainerBuilder().RegisterForPegh(new DummyCsArgumentPrompter()).Build();
             var errorsAndInfos = new ErrorsAndInfos();
-            vGitHubFolder = componentProvider.FolderResolver.Resolve(@"$(GitHub)", errorsAndInfos);
+            vGitHubFolder = container.Resolve<IFolderResolver>().Resolve(@"$(GitHub)", errorsAndInfos);
             Assert.IsFalse(errorsAndInfos.AnyErrors(), errorsAndInfos.ErrorsToString());
         }
 
