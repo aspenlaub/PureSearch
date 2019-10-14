@@ -13,7 +13,7 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Test {
         private readonly IFolder vGitHubFolder;
 
         public SearchCommandTest() {
-            var container = new ContainerBuilder().RegisterForPegh(new DummyCsArgumentPrompter()).Build();
+            var container = new ContainerBuilder().UsePegh(new DummyCsArgumentPrompter()).Build();
             var errorsAndInfos = new ErrorsAndInfos();
             vGitHubFolder = container.Resolve<IFolderResolver>().Resolve(@"$(GitHub)", errorsAndInfos);
             Assert.IsFalse(errorsAndInfos.AnyErrors(), errorsAndInfos.ErrorsToString());
