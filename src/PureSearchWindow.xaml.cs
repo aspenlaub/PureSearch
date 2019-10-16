@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using Aspenlaub.Net.GitHub.CSharp.Pegh.Entities;
 using Aspenlaub.Net.GitHub.CSharp.PureSearch.Application;
 using Aspenlaub.Net.GitHub.CSharp.PureSearch.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Application;
@@ -135,7 +136,8 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch {
                 case FeedbackType.ImportantMessage: {
                     var fileName = feedback.Message;
                     if (File.Exists(fileName)) {
-                        fileName = fileName.Substring(Folder.Text.Length + 1);
+                        var folder = new Folder(Folder.Text);
+                        fileName = fileName.Substring(folder.FullName.Length + 1);
                         Results.Items.Add(fileName);
                     }
                 } break;
