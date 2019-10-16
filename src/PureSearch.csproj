@@ -35,7 +35,7 @@
     <Folder Include="Application\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Aspenlaub.Net.GitHub.CSharp.Vishizhukel" Version="1.0.7224.25130" />
+    <PackageReference Include="Aspenlaub.Net.GitHub.CSharp.Vishizhukel" Version="1.0.7228.25193" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.6.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf.NETCore" Version="2.0.0" />
   </ItemGroup>
