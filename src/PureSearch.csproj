@@ -39,7 +39,7 @@
     <Folder Include="Application\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Aspenlaub.Net.GitHub.CSharp.Vishizhukel" Version="2.0.91.437" />
+    <PackageReference Include="Aspenlaub.Net.GitHub.CSharp.Vishizhukel" Version="2.0.92.973" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.6.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf.NETCore" Version="2.0.0" />
   </ItemGroup>
