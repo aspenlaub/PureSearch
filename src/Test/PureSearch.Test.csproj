@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <AssemblyName>Aspenlaub.Net.GitHub.CSharp.PureSearch.Test</AssemblyName>
     <RootNamespace>Aspenlaub.Net.GitHub.CSharp.PureSearch.Test</RootNamespace>
@@ -10,6 +10,7 @@
     <Deterministic>false</Deterministic>
     <AssemblyTitle>Aspenlaub.Net.GitHub.CSharp.PureSearch.Test</AssemblyTitle>
     <AssemblyProduct>Aspenlaub.Net.GitHub.CSharp.PureSearch.Test</AssemblyProduct>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
