@@ -22,9 +22,8 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Application {
 
         public Task Execute(IApplicationCommandExecutionContext context) {
             return Task.Run(() => {
-                var success = DoSearch(context, SearchFolderProvider.SearchInFolder, SearchArgumentsProvider.SearchFor, SearchArgumentsProvider.NameContains, SearchArgumentsProvider.TextThatFollows, SearchArgumentsProvider.TextThatDoesNotFollow, SearchArgumentsProvider.MatchCase, SearchArgumentsProvider.IfDifferentInFolder, SearchArgumentsProvider.EndsWith, SearchArgumentsProvider.NameDoesNotContain);
-                var errorMessage = success ? "" : "Something went wrong";
-                context.ReportExecutionResult(GetType(), success, errorMessage);
+                DoSearch(context, SearchFolderProvider.SearchInFolder, SearchArgumentsProvider.SearchFor, SearchArgumentsProvider.NameContains, SearchArgumentsProvider.TextThatFollows, SearchArgumentsProvider.TextThatDoesNotFollow, SearchArgumentsProvider.MatchCase, SearchArgumentsProvider.IfDifferentInFolder, SearchArgumentsProvider.EndsWith, SearchArgumentsProvider.NameDoesNotContain);
+                context.ReportExecutionResult(GetType(), true, "");
             });
         }
 
@@ -67,8 +66,11 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Application {
             return false;
         }
 
-        protected bool DoSearch(IApplicationCommandExecutionContext context, string folder, string searchFor, string nameContains, string follows, string doesNotFollow, bool matchCase, string ifDifferentInFolder, bool endsWith, string nameDoesNotContain) {
-            if (!Directory.Exists(folder)) { return false; }
+        protected void DoSearch(IApplicationCommandExecutionContext context, string folder, string searchFor, string nameContains, string follows, string doesNotFollow, bool matchCase, string ifDifferentInFolder, bool endsWith, string nameDoesNotContain) {
+            if (!Directory.Exists(folder)) { return; }
+
+            var ignoredSubFolders = new List<string> { "Addins", "AppData", "bin", "Debug", "Publish", "Release", "obj", ".cache", ".config", ".dotnet", ".git", ".librarymanager", ".nuget", ".templateengine", ".vs", ".vscode" };
+            if (ignoredSubFolders.Any(d => folder.EndsWith('\\' + d))) { return; }
 
             if (!matchCase) {
                 searchFor = searchFor.ToUpper();
@@ -77,10 +79,8 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Application {
             }
             var dirInfo = new DirectoryInfo(folder);
             try {
-                if (dirInfo.GetDirectories().Any(subDirInfo => !DoSearch(context, folder + '\\' + subDirInfo.Name, searchFor, nameContains, follows, doesNotFollow, matchCase, ifDifferentInFolder == "" ? "" : ifDifferentInFolder + '\\' + subDirInfo.Name, endsWith, nameDoesNotContain))) {
-                    return false;
-                }
-
+                dirInfo.GetDirectories().ToList().ForEach(subDirInfo => DoSearch(context, folder + '\\' + subDirInfo.Name, searchFor, nameContains, follows, doesNotFollow, matchCase,
+                    ifDifferentInFolder == "" ? "" : ifDifferentInFolder + '\\' + subDirInfo.Name, endsWith, nameDoesNotContain));
                 // ReSharper disable once LoopCanBePartlyConvertedToQuery
                 foreach (var fileInfo in from fileInfo in GetFiles(nameContains, dirInfo, endsWith, nameDoesNotContain) let addFileName = searchFor.Length == 0 || FileContains(fileInfo.FullName, searchFor, follows, doesNotFollow, matchCase) where addFileName select fileInfo) {
                     var differentFile = ifDifferentInFolder + '\\' + fileInfo.Name;
@@ -94,11 +94,9 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Application {
 
                     context.Report(fileInfo.FullName, false);
                 }
+                // ReSharper disable once EmptyGeneralCatchClause
             } catch {
-                return false;
             }
-
-            return true;
         }
 
         private static IEnumerable<FileInfo> GetFiles(string nameContains, DirectoryInfo dirInfo, bool endsWith, string nameDoesNotContain) {
