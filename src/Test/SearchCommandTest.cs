@@ -20,16 +20,6 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Test {
         }
 
         [TestMethod]
-        public async Task CannotSearchIfFolderDoesNotExist() {
-            var searchFolder = new FakeSearchFolder { SearchInFolder = vGitHubFolder.FullName + @"\PureSearch\PureSearch.Test\" };
-            var searchArguments = new FakeSearchArguments { MatchCase = false, NameContains = "Fake", SearchFor = "PureSearch", TextThatFollows = "", TextThatDoesNotFollow = "" };
-            var searchCommand = new SearchCommand(searchFolder, searchArguments);
-            var context = new FakeApplicationCommandExecutionContext();
-            await searchCommand.Execute(context);
-            Assert.IsFalse(context.Success);
-        }
-
-        [TestMethod]
         public async Task CanSearch() {
             var searchFolder = new FakeSearchFolder { SearchInFolder = vGitHubFolder.FullName + @"\PureSearch\src\Test\" };
             var searchArguments = new FakeSearchArguments { MatchCase = false, NameContains = "Fake", SearchFor = "PureSearch", TextThatFollows = "", TextThatDoesNotFollow = "" };
