@@ -15,7 +15,7 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Test {
         public SearchCommandTest() {
             var container = new ContainerBuilder().UsePegh(new DummyCsArgumentPrompter()).Build();
             var errorsAndInfos = new ErrorsAndInfos();
-            vGitHubFolder = container.Resolve<IFolderResolver>().Resolve(@"$(GitHub)", errorsAndInfos);
+            vGitHubFolder = container.Resolve<IFolderResolver>().ResolveAsync(@"$(GitHub)", errorsAndInfos).Result;
             Assert.IsFalse(errorsAndInfos.AnyErrors(), errorsAndInfos.ErrorsToString());
         }
 
