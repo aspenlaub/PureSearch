@@ -18,13 +18,11 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Application {
             SearchArgumentsProvider = searchArgumentsProvider;
         }
 
-        public bool CanExecute() { return true; }
+        public async Task<bool> CanExecuteAsync() { return await Task.FromResult(true); }
 
-        public Task Execute(IApplicationCommandExecutionContext context) {
-            return Task.Run(() => {
-                DoSearch(context, SearchFolderProvider.SearchInFolder, SearchArgumentsProvider.SearchFor, SearchArgumentsProvider.NameContains, SearchArgumentsProvider.TextThatFollows, SearchArgumentsProvider.TextThatDoesNotFollow, SearchArgumentsProvider.MatchCase, SearchArgumentsProvider.IfDifferentInFolder, SearchArgumentsProvider.EndsWith, SearchArgumentsProvider.NameDoesNotContain);
-                context.ReportExecutionResult(GetType(), true, "");
-            });
+        public async Task ExecuteAsync(IApplicationCommandExecutionContext context) {
+            await DoSearchAsync(context, SearchFolderProvider.SearchInFolder, SearchArgumentsProvider.SearchFor, SearchArgumentsProvider.NameContains, SearchArgumentsProvider.TextThatFollows, SearchArgumentsProvider.TextThatDoesNotFollow, SearchArgumentsProvider.MatchCase, SearchArgumentsProvider.IfDifferentInFolder, SearchArgumentsProvider.EndsWith, SearchArgumentsProvider.NameDoesNotContain);
+            await context.ReportExecutionResultAsync(GetType(), true, "");
         }
 
         protected bool FileContains(string fileName, string searchFor, string follows, string doesNotFollow, bool matchCase) {
@@ -66,7 +64,7 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Application {
             return false;
         }
 
-        protected void DoSearch(IApplicationCommandExecutionContext context, string folder, string searchFor, string nameContains, string follows, string doesNotFollow, bool matchCase, string ifDifferentInFolder, bool endsWith, string nameDoesNotContain) {
+        protected async Task DoSearchAsync(IApplicationCommandExecutionContext context, string folder, string searchFor, string nameContains, string follows, string doesNotFollow, bool matchCase, string ifDifferentInFolder, bool endsWith, string nameDoesNotContain) {
             if (!Directory.Exists(folder)) { return; }
 
             var ignoredSubFolders = new List<string> { "Addins", "AppData", "bin", "Debug", "Publish", "Release", "obj", ".cache", ".config", ".dotnet", ".git", ".librarymanager", ".nuget", ".templateengine", ".vs", ".vscode" };
@@ -79,8 +77,10 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Application {
             }
             var dirInfo = new DirectoryInfo(folder);
             try {
-                dirInfo.GetDirectories().ToList().ForEach(subDirInfo => DoSearch(context, folder + '\\' + subDirInfo.Name, searchFor, nameContains, follows, doesNotFollow, matchCase,
-                    ifDifferentInFolder == "" ? "" : ifDifferentInFolder + '\\' + subDirInfo.Name, endsWith, nameDoesNotContain));
+                foreach(var subDirInfo in dirInfo.GetDirectories().ToList()) {
+                    await DoSearchAsync(context, folder + '\\' + subDirInfo.Name, searchFor, nameContains, follows, doesNotFollow, matchCase,
+                        ifDifferentInFolder == "" ? "" : ifDifferentInFolder + '\\' + subDirInfo.Name, endsWith, nameDoesNotContain);
+                }
                 // ReSharper disable once LoopCanBePartlyConvertedToQuery
                 foreach (var fileInfo in from fileInfo in GetFiles(nameContains, dirInfo, endsWith, nameDoesNotContain) let addFileName = searchFor.Length == 0 || FileContains(fileInfo.FullName, searchFor, follows, doesNotFollow, matchCase) where addFileName select fileInfo) {
                     var differentFile = ifDifferentInFolder + '\\' + fileInfo.Name;
@@ -92,7 +92,7 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Application {
                         continue;
                     }
 
-                    context.Report(fileInfo.FullName, false);
+                    await context.ReportAsync(fileInfo.FullName, false);
                 }
                 // ReSharper disable once EmptyGeneralCatchClause
             } catch {

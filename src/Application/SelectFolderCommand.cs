@@ -15,11 +15,11 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Application {
             SearchFolderProvider = searchFolderProvider;
         }
 
-        public bool CanExecute() { return true; }
+        public async Task<bool> CanExecuteAsync() { return await Task.FromResult(true); }
 
-        public Task Execute(IApplicationCommandExecutionContext context) {
+        public async Task ExecuteAsync(IApplicationCommandExecutionContext context) {
             SearchFolderProvider.SearchInFolder = SearchFolderChanger.ChangeFolderFromThisOneToWhat(SearchFolderProvider.SearchInFolder);
-            return Task.Delay(0);
+            await Task.CompletedTask;
         }
     }
 }

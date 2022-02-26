@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Pure Search" Height="450" Width="1080" Icon="puresearch.ico"
-        Background="LightGray" Activated="PureSearchWindow_OnActivated" Closing="PureSearchWindow_OnClosing">
+        Background="LightGray" Activated="OnPureSearchWindowActivated" Closing="PureSearchWindow_OnClosing">
     <Grid Margin="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -27,7 +27,7 @@
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0">Folder</Label>
         <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" Margin="2" Name="Folder"></TextBox>
-        <Button Grid.Row="0" Grid.Column="5" Name="BrowseFolder" Click="BrowseFolder_OnClick" Margin="2">...</Button>
+        <Button Grid.Row="0" Grid.Column="5" Name="BrowseFolder" Click="OnBrowseFolderClickAsync" Margin="2">...</Button>
         <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">File name contains</Label>
         <TextBox Grid.Row="1" Grid.Column="2" Margin="2" Name="FileNameContains"></TextBox>
         <CheckBox Grid.Row="1" Grid.Column="3" Name="FileNameEndsWith">Ends with</CheckBox>
@@ -43,6 +43,6 @@
         <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2">If different in folder</Label>
         <TextBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="4" Margin="2" Name="IfDifferentInWhichFolder"></TextBox>
         <ListBox Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="6" Name="Results" MouseDoubleClick="Results_OnMouseDoubleClick"></ListBox>
-        <Button Grid.Row="1" Grid.Column="5" Name="Search" Click="Search_OnClick" Margin="2">_Search</Button>
+        <Button Grid.Row="1" Grid.Column="5" Name="Search" Click="OnSearchClickAsync" Margin="2">_Search</Button>
     </Grid>
 </Window>

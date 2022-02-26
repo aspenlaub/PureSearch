@@ -25,7 +25,7 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Test {
             var searchArguments = new FakeSearchArguments { MatchCase = false, NameContains = "Fake", SearchFor = "PureSearch", TextThatFollows = "", TextThatDoesNotFollow = "" };
             var searchCommand = new SearchCommand(searchFolder, searchArguments);
             var context = new FakeApplicationCommandExecutionContext();
-            await searchCommand.Execute(context);
+            await searchCommand.ExecuteAsync(context);
             Assert.IsTrue(context.Success);
             Assert.AreEqual(3, context.Messages.Count);
         }
@@ -36,7 +36,7 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Test {
             var searchArguments = new FakeSearchArguments() { MatchCase = false, NameContains = "Fake", SearchFor = "PureSearch", TextThatFollows = "SearchArguments", TextThatDoesNotFollow = "" };
             var searchCommand = new SearchCommand(searchFolder, searchArguments);
             var context = new FakeApplicationCommandExecutionContext();
-            await searchCommand.Execute(context);
+            await searchCommand.ExecuteAsync(context);
             Assert.IsTrue(context.Success);
             Assert.AreEqual(1, context.Messages.Count);
         }
@@ -47,7 +47,7 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Test {
             var searchArguments = new FakeSearchArguments() { MatchCase = false, NameContains = "Fake", SearchFor = "PureSearch", TextThatFollows = "", TextThatDoesNotFollow = "SearchArguments" };
             var searchCommand = new SearchCommand(searchFolder, searchArguments);
             var context = new FakeApplicationCommandExecutionContext();
-            await searchCommand.Execute(context);
+            await searchCommand.ExecuteAsync(context);
             Assert.IsTrue(context.Success);
             Assert.AreEqual(2, context.Messages.Count);
         }

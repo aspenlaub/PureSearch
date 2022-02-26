@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -31,7 +32,7 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch {
 
         public PureSearchWindow() {
             SynchronizationContext = SynchronizationContext.Current;
-            Controller = new ApplicationCommandController(ApplicationFeedbackHandler);
+            Controller = new ApplicationCommandController(HandleFeedbackToApplicationAsync);
             SearchApplication = new SearchApplication(Controller, this, this, this);
             InitializeComponent();
             GetRegistry();
@@ -59,20 +60,20 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch {
                 return;
             }
 
-            Folder.Text = (string)key.GetValue("LastSelectedFolder");
-            FileNameContains.Text = (string)key.GetValue("LastNameContent");
-            FileNameDoesNotContain.Text = (string)key.GetValue("LastNameDoesNotContain");
-            TextToSearchFor.Text = (string)key.GetValue("LastSearchString");
-            FollowingLinesContain.Text = (string)key.GetValue("LastSearchFollowString");
-            FollowingLinesDoNotContain.Text = (string)key.GetValue("LastSearchNotFollowString");
-            CaseSensitive.IsChecked = "TRUE" == (string)key.GetValue("LastMatchCase");
-            FileNameEndsWith.IsChecked = "TRUE" == (string)key.GetValue("LastEndsWith");
-            IfDifferentInWhichFolder.Text = (string)key.GetValue("IfDifferentInFolder");
+            Folder.Text = (string)key.GetValue("LastSelectedFolder") ?? "";
+            FileNameContains.Text = (string)key.GetValue("LastNameContent") ?? "";
+            FileNameDoesNotContain.Text = (string)key.GetValue("LastNameDoesNotContain") ?? "";
+            TextToSearchFor.Text = (string)key.GetValue("LastSearchString") ?? "";
+            FollowingLinesContain.Text = (string)key.GetValue("LastSearchFollowString") ?? "";
+            FollowingLinesDoNotContain.Text = (string)key.GetValue("LastSearchNotFollowString") ?? "";
+            CaseSensitive.IsChecked = "TRUE" == ((string)key.GetValue("LastMatchCase") ?? "");
+            FileNameEndsWith.IsChecked = "TRUE" == ((string)key.GetValue("LastEndsWith") ?? "");
+            IfDifferentInWhichFolder.Text = (string)key.GetValue("IfDifferentInFolder") ?? "";
         }
 
-        private void BrowseFolder_OnClick(object sender, RoutedEventArgs e) {
-            Controller.DisableCommand(typeof(SearchCommand));
-            Controller.Execute(typeof(SelectFolderCommand));
+        private async void OnBrowseFolderClickAsync(object sender, RoutedEventArgs e) {
+            await Controller.DisableCommandAsync(typeof(SearchCommand));
+            await Controller.ExecuteAsync(typeof(SelectFolderCommand));
         }
 
         public string ChangeFolderFromThisOneToWhat(string oldFolder) {
@@ -83,11 +84,11 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch {
             return folderBrowserDialog.ShowDialog() != true ? oldFolder : folderBrowserDialog.SelectedPath;
         }
 
-        private void Search_OnClick(object sender, RoutedEventArgs e) {
+        private async void OnSearchClickAsync(object sender, RoutedEventArgs e) {
             Cursor = Cursors.Wait;
             Results.Items.Clear();
-            Controller.DisableCommand(typeof(SelectFolderCommand));
-            Controller.Execute(typeof(SearchCommand));
+            await Controller.DisableCommandAsync(typeof(SelectFolderCommand));
+            await Controller.ExecuteAsync(typeof(SearchCommand));
         }
 
         private void Results_OnMouseDoubleClick(object sender, MouseButtonEventArgs e) {
@@ -108,18 +109,18 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch {
             SetRegistry();
         }
 
-        private void PureSearchWindow_OnActivated(object sender, EventArgs e) {
-            CommandsEnabledOrDisabledHandler();
+        private async void OnPureSearchWindowActivated(object sender, EventArgs e) {
+            await CommandsEnabledOrDisabledHandlerAsync();
         }
 
-        public void ApplicationFeedbackHandler(IFeedbackToApplication feedback) {
+        public async Task HandleFeedbackToApplicationAsync(IFeedbackToApplication feedback) {
             switch (feedback.Type) {
                 case FeedbackType.CommandExecutionCompleted:
                 case FeedbackType.CommandExecutionCompletedWithMessage: {
-                    CommandExecutionCompletedHandler(feedback);
+                    await CommandExecutionCompletedHandlerAsync(feedback);
                 } break;
                 case FeedbackType.CommandsEnabledOrDisabled: {
-                    CommandsEnabledOrDisabledHandler();
+                    await CommandsEnabledOrDisabledHandlerAsync();
                 } break;
                 case FeedbackType.LogInformation: {
                     SearchApplication.Log.Add(new LogEntry() { Message = feedback.Message, CreatedAt = feedback.CreatedAt, SequenceNumber = feedback.SequenceNumber });
@@ -145,28 +146,30 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch {
                     throw new NotImplementedException();
                 }
             }
+
+            await Task.CompletedTask;
         }
 
-        private void CommandExecutionCompletedHandler(IFeedbackToApplication feedback) {
+        private async Task CommandExecutionCompletedHandlerAsync(IFeedbackToApplication feedback) {
             if (!Controller.IsMainThread()) { return; }
 
             Cursor = Cursors.Arrow;
             if (feedback.CommandType == typeof(SearchCommand)) {
-                Controller.EnableCommand(typeof(SelectFolderCommand));
+                await Controller.EnableCommandAsync(typeof(SelectFolderCommand));
             } else if (feedback.CommandType == typeof(SelectFolderCommand)) {
-                Controller.EnableCommand(typeof(SearchCommand));
+                await Controller.EnableCommandAsync(typeof(SearchCommand));
             }
         }
 
-        public void CommandsEnabledOrDisabledHandler() {
-            BrowseFolder.IsEnabled = Controller.Enabled(typeof(SelectFolderCommand));
-            Search.IsEnabled = Controller.Enabled(typeof(SearchCommand));
+        public async Task CommandsEnabledOrDisabledHandlerAsync() {
+            BrowseFolder.IsEnabled = await Controller.EnabledAsync(typeof(SelectFolderCommand));
+            Search.IsEnabled = await Controller.EnabledAsync(typeof(SearchCommand));
         }
 
         public string SearchInFolder {
             get => Text(Folder);
             set {
-                SynchronizationContext.Post(o => { Folder.Text = value; }, null);
+                SynchronizationContext.Post(_ => { Folder.Text = value; }, null);
             }
         }
 
@@ -181,13 +184,13 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch {
 
         private string Text(TextBox textBox) {
             var s = "";
-            SynchronizationContext.Send(x => { s = textBox.Text; }, null);
+            SynchronizationContext.Send(_ => { s = textBox.Text; }, null);
             return s;
         }
 
         private bool IsChecked(ToggleButton checkBox) {
             var isChecked = false;
-            SynchronizationContext.Send(x => { isChecked = checkBox.IsChecked == true; }, null);
+            SynchronizationContext.Send(_ => { isChecked = checkBox.IsChecked == true; }, null);
             return isChecked;
         }
     }
