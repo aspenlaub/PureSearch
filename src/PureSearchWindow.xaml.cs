@@ -37,7 +37,9 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
 
     public PureSearchWindow() {
         var container = new ContainerBuilder().UsePegh(new DummyCsArgumentPrompter()).Build();
-        var logConfiguration = new LogConfiguration();
+        var logConfigurationFactory = container.Resolve<ILogConfigurationFactory>();
+        logConfigurationFactory.InitializeIfNecessary("PureSearch", true);
+        var logConfiguration = logConfigurationFactory.Create();
         SimpleLogger = container.Resolve<ISimpleLogger>();
         SimpleLogger.LogSubFolder = logConfiguration.LogSubFolder;
         LogId = logConfiguration.LogId;
