@@ -14,7 +14,7 @@ public class SearchCommandTest {
     private readonly IFolder GitHubFolder;
 
     public SearchCommandTest() {
-        var container = new ContainerBuilder().UsePegh(new DummyCsArgumentPrompter()).Build();
+        var container = new ContainerBuilder().UsePegh("PureSearch", new DummyCsArgumentPrompter()).Build();
         var errorsAndInfos = new ErrorsAndInfos();
         GitHubFolder = container.Resolve<IFolderResolver>().ResolveAsync(@"$(GitHub)", errorsAndInfos).Result;
         Assert.IsFalse(errorsAndInfos.AnyErrors(), errorsAndInfos.ErrorsToString());
