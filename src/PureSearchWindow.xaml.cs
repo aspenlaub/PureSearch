@@ -38,7 +38,7 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
         var container = new ContainerBuilder().UsePegh("PureSearch", new DummyCsArgumentPrompter()).Build();
         SimpleLogger = container.Resolve<ISimpleLogger>();
         SynchronizationContext = SynchronizationContext.Current;
-        Controller = new ApplicationCommandController(HandleFeedbackToApplicationAsync);
+        Controller = new ApplicationCommandController(SimpleLogger, HandleFeedbackToApplicationAsync);
         SearchApplication = new SearchApplication(Controller, this, this, this);
         InitializeComponent();
         GetRegistry();
