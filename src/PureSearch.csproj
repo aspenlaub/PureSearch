@@ -44,7 +44,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
-    <PackageReference Include="Vishizhukel" Version="2.0.1040.1033" />
+    <PackageReference Include="Vishizhukel" Version="2.0.1041.1018" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

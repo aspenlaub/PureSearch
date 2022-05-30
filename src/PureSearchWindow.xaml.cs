@@ -31,17 +31,12 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
     protected SearchApplication SearchApplication;
     protected SynchronizationContext SynchronizationContext;
     protected ISimpleLogger SimpleLogger;
-    protected string LogId;
 
     private const string RegPath = @"Software\PureSearch\";
 
     public PureSearchWindow() {
         var container = new ContainerBuilder().UsePegh("PureSearch", new DummyCsArgumentPrompter()).Build();
-        var logConfigurationFactory = container.Resolve<ILogConfigurationFactory>();
-        var logConfiguration = logConfigurationFactory.Create();
         SimpleLogger = container.Resolve<ISimpleLogger>();
-        SimpleLogger.LogSubFolder = logConfiguration.LogSubFolder;
-        LogId = logConfiguration.LogId;
         SynchronizationContext = SynchronizationContext.Current;
         Controller = new ApplicationCommandController(HandleFeedbackToApplicationAsync);
         SearchApplication = new SearchApplication(Controller, this, this, this);
@@ -125,7 +120,7 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
     }
 
     public async Task HandleFeedbackToApplicationAsync(IFeedbackToApplication feedback) {
-        using (SimpleLogger.BeginScope(SimpleLoggingScopeId.Create("Scope", LogId))) {
+        using (SimpleLogger.BeginScope(SimpleLoggingScopeId.Create("Scope", SimpleLogger.LogId))) {
 
             switch (feedback.Type) {
                 case FeedbackType.CommandExecutionCompleted:
