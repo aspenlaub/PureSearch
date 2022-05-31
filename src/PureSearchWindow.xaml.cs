@@ -10,13 +10,13 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Components;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Entities;
+using Aspenlaub.Net.GitHub.CSharp.Pegh.Extensions;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.PureSearch.Application;
 using Aspenlaub.Net.GitHub.CSharp.PureSearch.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Application;
 using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Interfaces.Application;
 using Autofac;
-using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 
@@ -31,6 +31,7 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
     protected SearchApplication SearchApplication;
     protected SynchronizationContext SynchronizationContext;
     protected ISimpleLogger SimpleLogger;
+    protected IMethodNamesFromStackFramesExtractor MethodNamesFromStackFramesExtractor;
 
     private const string RegPath = @"Software\PureSearch\";
 
@@ -121,7 +122,7 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
 
     public async Task HandleFeedbackToApplicationAsync(IFeedbackToApplication feedback) {
         using (SimpleLogger.BeginScope(SimpleLoggingScopeId.Create("Scope", SimpleLogger.LogId))) {
-
+            var methodNamesFromStack = MethodNamesFromStackFramesExtractor.ExtractMethodNamesFromStackFrames();
             switch (feedback.Type) {
                 case FeedbackType.CommandExecutionCompleted:
                 case FeedbackType.CommandExecutionCompletedWithMessage: {
@@ -133,19 +134,19 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
                 }
                     break;
                 case FeedbackType.LogInformation: {
-                    SimpleLogger.LogInformation(feedback.Message);
+                    SimpleLogger.LogInformationWithCallStack(feedback.Message, methodNamesFromStack);
                 }
                     break;
                 case FeedbackType.LogWarning: {
-                    SimpleLogger.LogWarning(feedback.Message);
+                    SimpleLogger.LogWarningWithCallStack(feedback.Message, methodNamesFromStack);
                 }
                     break;
                 case FeedbackType.LogError: {
-                    SimpleLogger.LogError(feedback.Message);
+                    SimpleLogger.LogErrorWithCallStack(feedback.Message, methodNamesFromStack);
                 }
                     break;
                 case FeedbackType.CommandIsDisabled: {
-                    SimpleLogger.LogError("Attempt to run disabled command " + feedback.CommandType);
+                    SimpleLogger.LogErrorWithCallStack("Attempt to run disabled command " + feedback.CommandType, methodNamesFromStack);
                 }
                     break;
                 case FeedbackType.ImportantMessage: {
