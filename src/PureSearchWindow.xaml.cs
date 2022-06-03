@@ -122,46 +122,46 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
     }
 
     public async Task HandleFeedbackToApplicationAsync(IFeedbackToApplication feedback) {
-        using (SimpleLogger.BeginScope(SimpleLoggingScopeId.Create("Scope", SimpleLogger.LogId))) {
+        using (SimpleLogger.BeginScope(SimpleLoggingScopeId.Create("Scope"))) {
             var methodNamesFromStack = MethodNamesFromStackFramesExtractor.ExtractMethodNamesFromStackFrames();
             switch (feedback.Type) {
                 case FeedbackType.CommandExecutionCompleted:
                 case FeedbackType.CommandExecutionCompletedWithMessage: {
-                    await CommandExecutionCompletedHandlerAsync(feedback);
-                }
+                        await CommandExecutionCompletedHandlerAsync(feedback);
+                    }
                     break;
                 case FeedbackType.CommandsEnabledOrDisabled: {
-                    await CommandsEnabledOrDisabledHandlerAsync();
-                }
+                        await CommandsEnabledOrDisabledHandlerAsync();
+                    }
                     break;
                 case FeedbackType.LogInformation: {
-                    SimpleLogger.LogInformationWithCallStack(feedback.Message, methodNamesFromStack);
-                }
+                        SimpleLogger.LogInformationWithCallStack(feedback.Message, methodNamesFromStack);
+                    }
                     break;
                 case FeedbackType.LogWarning: {
-                    SimpleLogger.LogWarningWithCallStack(feedback.Message, methodNamesFromStack);
-                }
+                        SimpleLogger.LogWarningWithCallStack(feedback.Message, methodNamesFromStack);
+                    }
                     break;
                 case FeedbackType.LogError: {
-                    SimpleLogger.LogErrorWithCallStack(feedback.Message, methodNamesFromStack);
-                }
+                        SimpleLogger.LogErrorWithCallStack(feedback.Message, methodNamesFromStack);
+                    }
                     break;
                 case FeedbackType.CommandIsDisabled: {
-                    SimpleLogger.LogErrorWithCallStack("Attempt to run disabled command " + feedback.CommandType, methodNamesFromStack);
-                }
+                        SimpleLogger.LogErrorWithCallStack("Attempt to run disabled command " + feedback.CommandType, methodNamesFromStack);
+                    }
                     break;
                 case FeedbackType.ImportantMessage: {
-                    var fileName = feedback.Message;
-                    if (File.Exists(fileName)) {
-                        var folder = new Folder(Folder.Text);
-                        fileName = fileName.Substring(folder.FullName.Length + 1);
-                        Results.Items.Add(fileName);
+                        var fileName = feedback.Message;
+                        if (File.Exists(fileName)) {
+                            var folder = new Folder(Folder.Text);
+                            fileName = fileName.Substring(folder.FullName.Length + 1);
+                            Results.Items.Add(fileName);
+                        }
                     }
-                }
                     break;
                 default: {
-                    throw new NotImplementedException();
-                }
+                        throw new NotImplementedException();
+                    }
             }
         }
 
