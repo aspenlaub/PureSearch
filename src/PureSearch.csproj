@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>Aspenlaub.Net.GitHub.CSharp.PureSearch</AssemblyName>
     <RootNamespace>Aspenlaub.Net.GitHub.CSharp.PureSearch</RootNamespace>
@@ -44,7 +44,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
-    <PackageReference Include="Vishizhukel" Version="2.0.1204.866" />
+    <PackageReference Include="Vishizhukel" Version="2.0.1206.506" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
