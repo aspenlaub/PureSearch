@@ -101,10 +101,13 @@ public class SearchCommand : IApplicationCommand {
     }
 
     private static IEnumerable<FileInfo> GetFiles(string nameContains, DirectoryInfo dirInfo, bool endsWith, string nameDoesNotContain) {
+        var nameDoesNotContainList = string.IsNullOrWhiteSpace(nameDoesNotContain)
+            ? new List<string>()
+            : nameDoesNotContain.Split(';').ToList();
         return dirInfo.GetFiles('*' + nameContains + '*')
             .Where(f => f.Name.Contains(nameContains)
-                        && (!endsWith || f.Name.EndsWith(nameContains))
-                        && (string.IsNullOrEmpty(nameDoesNotContain) || !f.Name.Contains(nameDoesNotContain))
-                        && (f.Attributes & FileAttributes.Hidden) == 0);
+                && (!endsWith || f.Name.EndsWith(nameContains))
+                && !nameDoesNotContainList.Any(n => f.Name.Contains(n))
+                && (f.Attributes & FileAttributes.Hidden) == 0);
     }
 }

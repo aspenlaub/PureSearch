@@ -120,8 +120,14 @@
   <data name="DoNotKnowHowToOpenThisFileType" xml:space="preserve">
     <value>Sorry, the operating system does not know how to open this type of file</value>
   </data>
+  <data name="NoResultsToCopy" xml:space="preserve">
+    <value>No result/-s to copy</value>
+  </data>
   <data name="PureSearch" xml:space="preserve">
     <value>Pure Search</value>
+  </data>
+  <data name="ResultsCopiedToClipboard" xml:space="preserve">
+    <value>Result/-s copied to clipboard</value>
   </data>
   <data name="SearchCommandName" xml:space="preserve">
     <value>Search</value>

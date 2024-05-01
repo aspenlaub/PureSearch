@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Pure Search" Height="450" Width="1080" Icon="puresearch.ico"
+        Title="Pure Search" Height="450" Width="Auto" Icon="puresearch.ico"
         Background="LightGray" Activated="OnPureSearchWindowActivated" Closing="PureSearchWindow_OnClosing">
     <Grid Margin="8">
         <Grid.RowDefinitions>
@@ -18,7 +18,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="80" />
+            <ColumnDefinition Width="120" />
             <ColumnDefinition Width="160" />
             <ColumnDefinition Width="320" />
             <ColumnDefinition Width="240" />
@@ -31,7 +31,7 @@
         <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">File name contains</Label>
         <TextBox Grid.Row="1" Grid.Column="2" Margin="2" Name="FileNameContains"></TextBox>
         <CheckBox Grid.Row="1" Grid.Column="3" Name="FileNameEndsWith">Ends with</CheckBox>
-        <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">File name does not contain</Label>
+        <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">File name does not contain (semicolon separated)</Label>
         <TextBox Grid.Row="2" Grid.Column="2" Margin="2" Name="FileNameDoesNotContain"></TextBox>
         <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">Search for</Label>
         <TextBox Grid.Row="3" Grid.Column="2" Margin="2" Name="TextToSearchFor"></TextBox>
@@ -44,5 +44,6 @@
         <TextBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="4" Margin="2" Name="IfDifferentInWhichFolder"></TextBox>
         <ListBox Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="6" Name="Results" MouseDoubleClick="Results_OnMouseDoubleClick"></ListBox>
         <Button Grid.Row="1" Grid.Column="5" Name="Search" Click="OnSearchClickAsync" Margin="2">_Search</Button>
+        <Button Grid.Row="2" Grid.Column="5" Name="Copy" Click="OnCopyClickAsync" Margin="2">_Copy</Button>
     </Grid>
 </Window>

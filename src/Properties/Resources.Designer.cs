@@ -19,7 +19,7 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -70,11 +70,29 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No result/-s to copy.
+        /// </summary>
+        internal static string NoResultsToCopy {
+            get {
+                return ResourceManager.GetString("NoResultsToCopy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pure Search.
         /// </summary>
         internal static string PureSearch {
             get {
                 return ResourceManager.GetString("PureSearch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Result/-s copied to clipboard.
+        /// </summary>
+        internal static string ResultsCopiedToClipboard {
+            get {
+                return ResourceManager.GetString("ResultsCopiedToClipboard", resourceCulture);
             }
         }
         

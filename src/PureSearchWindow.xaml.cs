@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -127,38 +128,38 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
             switch (feedback.Type) {
                 case FeedbackType.CommandExecutionCompleted:
                 case FeedbackType.CommandExecutionCompletedWithMessage: {
-                        await CommandExecutionCompletedHandlerAsync(feedback);
-                    }
-                    break;
+                    await CommandExecutionCompletedHandlerAsync(feedback);
+                }
+                break;
                 case FeedbackType.CommandsEnabledOrDisabled: {
-                        await CommandsEnabledOrDisabledHandlerAsync();
-                    }
-                    break;
+                    await CommandsEnabledOrDisabledHandlerAsync();
+                }
+                break;
                 case FeedbackType.LogInformation: {
-                        SimpleLogger.LogInformationWithCallStack(feedback.Message, methodNamesFromStack);
-                    }
-                    break;
+                    SimpleLogger.LogInformationWithCallStack(feedback.Message, methodNamesFromStack);
+                }
+                break;
                 case FeedbackType.LogWarning: {
-                        SimpleLogger.LogWarningWithCallStack(feedback.Message, methodNamesFromStack);
-                    }
-                    break;
+                    SimpleLogger.LogWarningWithCallStack(feedback.Message, methodNamesFromStack);
+                }
+                break;
                 case FeedbackType.LogError: {
-                        SimpleLogger.LogErrorWithCallStack(feedback.Message, methodNamesFromStack);
-                    }
-                    break;
+                    SimpleLogger.LogErrorWithCallStack(feedback.Message, methodNamesFromStack);
+                }
+                break;
                 case FeedbackType.CommandIsDisabled: {
-                        SimpleLogger.LogErrorWithCallStack("Attempt to run disabled command " + feedback.CommandType, methodNamesFromStack);
-                    }
-                    break;
+                    SimpleLogger.LogErrorWithCallStack("Attempt to run disabled command " + feedback.CommandType, methodNamesFromStack);
+                }
+                break;
                 case FeedbackType.ImportantMessage: {
-                        var fileName = feedback.Message;
-                        if (File.Exists(fileName)) {
-                            var folder = new Folder(Folder.Text);
-                            fileName = fileName.Substring(folder.FullName.Length + 1);
-                            Results.Items.Add(fileName);
-                        }
+                    var fileName = feedback.Message;
+                    if (File.Exists(fileName)) {
+                        var folder = new Folder(Folder.Text);
+                        fileName = fileName.Substring(folder.FullName.Length + 1);
+                        Results.Items.Add(fileName);
                     }
-                    break;
+                }
+                break;
                 default: {
                         throw new NotImplementedException();
                     }
@@ -210,5 +211,16 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
         var isChecked = false;
         SynchronizationContext.Send(_ => { isChecked = checkBox.IsChecked == true; }, null);
         return isChecked;
+    }
+
+    private void OnCopyClickAsync(object sender, RoutedEventArgs e) {
+        if (Results.Items.Count == 0) {
+            MessageBox.Show(Properties.Resources.NoResultsToCopy, Properties.Resources.PureSearch, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            return;
+        }
+
+        var text = Folder.Text + '\\' + string.Join("\r\n" + Folder.Text + '\\', Results.Items.Cast<string>());
+        Clipboard.SetText(text);
+        MessageBox.Show(Properties.Resources.ResultsCopiedToClipboard, Properties.Resources.PureSearch, MessageBoxButton.OK, MessageBoxImage.Information);
     }
 }
