@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="PureSearch.csproj" />
+  <Project Path="Test/PureSearch.Test.csproj" />
+</Solution>
