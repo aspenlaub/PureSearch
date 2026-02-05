@@ -11,18 +11,18 @@ namespace Aspenlaub.Net.GitHub.CSharp.PureSearch.Test;
 
 [TestClass]
 public class SearchCommandTest {
-    private readonly IFolder GitHubFolder;
+    private readonly IFolder _GitHubFolder;
 
     public SearchCommandTest() {
-        var container = new ContainerBuilder().UsePegh("PureSearch", new DummyCsArgumentPrompter()).Build();
+        var container = new ContainerBuilder().UsePegh("PureSearch").Build();
         var errorsAndInfos = new ErrorsAndInfos();
-        GitHubFolder = container.Resolve<IFolderResolver>().ResolveAsync(@"$(GitHub)", errorsAndInfos).Result;
+        _GitHubFolder = container.Resolve<IFolderResolver>().ResolveAsync(@"$(GitHub)", errorsAndInfos).Result;
         Assert.IsFalse(errorsAndInfos.AnyErrors(), errorsAndInfos.ErrorsToString());
     }
 
     [TestMethod]
     public async Task CanSearch() {
-        var searchFolder = new FakeSearchFolder { SearchInFolder = GitHubFolder.FullName + @"\PureSearch\src\Test\" };
+        var searchFolder = new FakeSearchFolder { SearchInFolder = _GitHubFolder.FullName + @"\PureSearch\src\Test\" };
         var searchArguments = new FakeSearchArguments { MatchCase = false, NameContains = "Fake", SearchFor = "PureSearch", TextThatFollows = "", TextThatDoesNotFollow = "" };
         var searchCommand = new SearchCommand(searchFolder, searchArguments);
         var context = new FakeApplicationCommandExecutionContext();
@@ -33,7 +33,7 @@ public class SearchCommandTest {
 
     [TestMethod]
     public async Task CanSearchOnFollowingLine() {
-        var searchFolder = new FakeSearchFolder { SearchInFolder = GitHubFolder.FullName + @"\PureSearch\src\Test\" };
+        var searchFolder = new FakeSearchFolder { SearchInFolder = _GitHubFolder.FullName + @"\PureSearch\src\Test\" };
         var searchArguments = new FakeSearchArguments { MatchCase = false, NameContains = "Fake", SearchFor = "PureSearch", TextThatFollows = "SearchArguments", TextThatDoesNotFollow = "" };
         var searchCommand = new SearchCommand(searchFolder, searchArguments);
         var context = new FakeApplicationCommandExecutionContext();
@@ -44,7 +44,7 @@ public class SearchCommandTest {
 
     [TestMethod]
     public async Task CanSearchOnNotFollowingLine() {
-        var searchFolder = new FakeSearchFolder { SearchInFolder = GitHubFolder.FullName + @"\PureSearch\src\Test\" };
+        var searchFolder = new FakeSearchFolder { SearchInFolder = _GitHubFolder.FullName + @"\PureSearch\src\Test\" };
         var searchArguments = new FakeSearchArguments { MatchCase = false, NameContains = "Fake", SearchFor = "public class", TextThatFollows = "", TextThatDoesNotFollow = "Contains" };
         var searchCommand = new SearchCommand(searchFolder, searchArguments);
         var context = new FakeApplicationCommandExecutionContext();

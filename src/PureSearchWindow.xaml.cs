@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -20,6 +21,7 @@ using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Interfaces.Application;
 using Autofac;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
+using IContainer = Autofac.IContainer;
 
 namespace Aspenlaub.Net.GitHub.CSharp.PureSearch;
 
@@ -34,10 +36,10 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
     protected ISimpleLogger SimpleLogger;
     protected IMethodNamesFromStackFramesExtractor MethodNamesFromStackFramesExtractor;
 
-    private const string RegPath = @"Software\PureSearch\";
+    private const string _regPath = @"Software\PureSearch\";
 
     public PureSearchWindow() {
-        var container = new ContainerBuilder().UsePegh("PureSearch", new DummyCsArgumentPrompter()).Build();
+        IContainer container = new ContainerBuilder().UsePegh("PureSearch").Build();
         SimpleLogger = container.Resolve<ISimpleLogger>();
         MethodNamesFromStackFramesExtractor = container.Resolve<IMethodNamesFromStackFramesExtractor>();
         SynchronizationContext = SynchronizationContext.Current;
@@ -48,7 +50,7 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
     }
 
     protected void SetRegistry() {
-        var key = Registry.CurrentUser.CreateSubKey(RegPath);
+        RegistryKey key = Registry.CurrentUser.CreateSubKey(_regPath);
         // ReSharper disable once UseNullPropagationWhenPossible
         if (key == null) { return; }
 
@@ -64,7 +66,7 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
     }
 
     protected void GetRegistry() {
-        var key = Registry.CurrentUser.OpenSubKey(RegPath);
+        RegistryKey key = Registry.CurrentUser.OpenSubKey(_regPath);
         if (key == null) {
             return;
         }
@@ -103,7 +105,7 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
     private void Results_OnMouseDoubleClick(object sender, MouseButtonEventArgs e) {
         if (Results.SelectedIndex < 0) { return; }
 
-        var fileName = Folder.Text + '\\' + (string)Results.Items[Results.SelectedIndex];
+        string fileName = Folder.Text + '\\' + (string)Results.Items[Results.SelectedIndex];
         if (!File.Exists(fileName)) { return; }
 
         try {
@@ -124,7 +126,7 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
 
     public async Task HandleFeedbackToApplicationAsync(IFeedbackToApplication feedback) {
         using (SimpleLogger.BeginScope(SimpleLoggingScopeId.Create("Scope"))) {
-            var methodNamesFromStack = MethodNamesFromStackFramesExtractor.ExtractMethodNamesFromStackFrames();
+            IList<string> methodNamesFromStack = MethodNamesFromStackFramesExtractor.ExtractMethodNamesFromStackFrames();
             switch (feedback.Type) {
                 case FeedbackType.CommandExecutionCompleted:
                 case FeedbackType.CommandExecutionCompletedWithMessage: {
@@ -152,7 +154,7 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
                 }
                 break;
                 case FeedbackType.ImportantMessage: {
-                    var fileName = feedback.Message;
+                    string fileName = feedback.Message;
                     if (File.Exists(fileName)) {
                         var folder = new Folder(Folder.Text);
                         fileName = fileName.Substring(folder.FullName.Length + 1);
@@ -160,6 +162,11 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
                     }
                 }
                 break;
+                case FeedbackType.MessageOfNoImportance:
+                case FeedbackType.MessagesOfNoImportanceWereIgnored:
+                case FeedbackType.EnableCommand:
+                case FeedbackType.DisableCommand:
+                case FeedbackType.UnknownCommand:
                 default: {
                         throw new NotImplementedException();
                     }
@@ -186,7 +193,7 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
     }
 
     public string SearchInFolder {
-        get => Text(Folder);
+        get { return Text(Folder); }
         set {
             SynchronizationContext.Post(_ => { Folder.Text = value; }, null);
         }
@@ -202,13 +209,13 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
     public string IfDifferentInFolder => Text(IfDifferentInWhichFolder);
 
     private string Text(TextBox textBox) {
-        var s = "";
+        string s = "";
         SynchronizationContext.Send(_ => { s = textBox.Text; }, null);
         return s;
     }
 
     private bool IsChecked(ToggleButton checkBox) {
-        var isChecked = false;
+        bool isChecked = false;
         SynchronizationContext.Send(_ => { isChecked = checkBox.IsChecked == true; }, null);
         return isChecked;
     }
@@ -219,7 +226,7 @@ public partial class PureSearchWindow : ISearchFolder, ISearchArguments, ISearch
             return;
         }
 
-        var text = Folder.Text + '\\' + string.Join("\r\n" + Folder.Text + '\\', Results.Items.Cast<string>());
+        string text = Folder.Text + '\\' + string.Join("\r\n" + Folder.Text + '\\', Results.Items.Cast<string>());
         Clipboard.SetText(text);
         MessageBox.Show(Properties.Resources.ResultsCopiedToClipboard, Properties.Resources.PureSearch, MessageBoxButton.OK, MessageBoxImage.Information);
     }
