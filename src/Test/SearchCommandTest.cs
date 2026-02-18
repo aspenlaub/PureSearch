@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Components;
-using Aspenlaub.Net.GitHub.CSharp.Pegh.Entities;
-using Aspenlaub.Net.GitHub.CSharp.Pegh.Extensions;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.PureSearch.Application;
+using Aspenlaub.Net.GitHub.CSharp.Seoa.Extensions;
+using Aspenlaub.Net.GitHub.CSharp.Skladasu.Entities;
 using Autofac;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,10 +14,10 @@ public class SearchCommandTest {
     private readonly IFolder _GitHubFolder;
 
     public SearchCommandTest() {
-        var container = new ContainerBuilder().UsePegh("PureSearch").Build();
+        IContainer container = new ContainerBuilder().UsePegh("PureSearch").Build();
         var errorsAndInfos = new ErrorsAndInfos();
         _GitHubFolder = container.Resolve<IFolderResolver>().ResolveAsync(@"$(GitHub)", errorsAndInfos).Result;
-        Assert.IsFalse(errorsAndInfos.AnyErrors(), errorsAndInfos.ErrorsToString());
+        Assert.That.ThereWereNoErrors(errorsAndInfos);
     }
 
     [TestMethod]
