@@ -21,6 +21,7 @@
     <RepositoryUrl>https://github.com/aspenlaub/PureSearch.git</RepositoryUrl>
     <RepositoryBranch>master</RepositoryBranch>
     <PackageId>PureSearch</PackageId>
+    <MSBuildEnableWorkloadResolver>false</MSBuildEnableWorkloadResolver>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
